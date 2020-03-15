@@ -53,7 +53,7 @@ void SerialThraed::run()
         }
         if(temp_need_close && serial.isOpen()){
             m_need_close = false;
-            qDebug()<<"nedd close and go close";
+            //            qDebug()<<"nedd close and go close";
             serial.close();
             emit sig_stateChange(false);
         }
@@ -63,7 +63,7 @@ void SerialThraed::run()
         }
         if(temp_need_open){
             m_need_open = false;
-            qDebug()<<"temp_need_open and go open";
+            //            qDebug()<<"need open and go open";
             if(serial.isOpen()){
                 serial.close();
                 emit sig_stateChange(false);
@@ -74,12 +74,12 @@ void SerialThraed::run()
             serial.setDataBits(QSerialPort::Data8);
             serial.setStopBits(QSerialPort::OneStop);
             if (!serial.open(QIODevice::ReadWrite)) {
-                qDebug()<<"open fail";
+                //                qDebug()<<"open fail";
                 emit sig_error(tr("Can't open %1, error code %2")
                                .arg(temp_portName).arg(serial.error()));
                 continue;
             }
-            qDebug()<<"open success";
+            //            qDebug()<<"open success";
             serial.setPortName(temp_portName);
             serial.setBaudRate(temp_buadrate);
             serial.setParity(QSerialPort::NoParity);
@@ -92,11 +92,11 @@ void SerialThraed::run()
             auto temp_data = sendQueue.dequeue();
             serial.write(temp_data);
             serial.flush();
+            emit sig_alreadySend(temp_data);
             if (serial.waitForReadyRead()) {
                 QByteArray responseData = serial.readAll();
                 emit sig_read(responseData);
             }
-            emit sig_alreadySend(temp_data);
         }
     }
 }
